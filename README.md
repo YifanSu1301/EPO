@@ -8,6 +8,7 @@ This repository contains the official implementation for the algorithm **Evoluti
 
 ## Performance of EPO
 
+![Manipulation Task Performance](docs/images/manipulation_task_performance.png)
 
 ## Quickstart
 
@@ -76,8 +77,17 @@ We provide the exact commands which can be used to reproduce the performance of 
 
 ## Citation
 If you find our code useful, please cite our work
-
-
+```
+@misc{wang2025evolutionarypolicyoptimization,
+      title={Evolutionary Policy Optimization}, 
+      author={Jianren Wang and Yifan Su and Abhinav Gupta and Deepak Pathak},
+      year={2025},
+      eprint={2503.19037},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2503.19037}, 
+}
+```
 ## Acknowledgements
 This implementation builds upon the the following codebases - 
 1. [IsaacGymEnvs](https://github.com/isaac-sim/IsaacGymEnvs)
