@@ -1,4 +1,4 @@
-# EPO: Evolutionary Policy Optimization (under submission)
+# EPO: Evolutionary Policy Optimization
 [![arXiv](https://img.shields.io/badge/arXiv-2407.20230-df2a2a.svg)](https://arxiv.org/abs/2407.20230)
 [![Static Badge](https://img.shields.io/badge/Project-epo-a)](https://sites.google.com/view/epo-rl)
 [![Python](https://img.shields.io/badge/python-3.8-blue)](https://www.python.org)
@@ -99,8 +99,10 @@ This implementation builds upon the the following codebases -
 <small><small>
 <a id="1">[1]</a> 
 Petrenko, A., Allshire, A., State, G., Handa, A., & Makoviychuk, V. (2023). DexPBT: Scaling up Dexterous Manipulation for Hand-Arm Systems with Population Based Training. ArXiv, abs/2305.12127.
+
 <a id="2">[2]</a>
 Schulman, J., Wolski, F., Dhariwal, P., Radford, A., & Klimov, O. (2017). Proximal Policy Optimization Algorithms. ArXiv, abs/1707.06347.
+
 <a id="3">[3]</a>
 Singla, Jayesh and Agarwal, Ananye and Pathak, Deepak. (2024). SAPG: Split and Aggregate Policy Gradients. ArXiv, abs/2407.20230.
 
