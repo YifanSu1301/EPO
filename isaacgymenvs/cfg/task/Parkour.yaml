@@ -1,0 +1,506 @@
+defaults:
+  - _self_
+
+name: Parkour
+
+physics_engine: ${..physics_engine}
+
+env:
+  subtask: ""
+
+  # if given, will override the device setting in gym.
+  numEnvs: ${resolve_default:8192,${...num_envs}}
+
+  # envSpacing: 1.2
+  # episodeLength: 600
+  # enableDebugVis: False
+  # evalStats: False  # extra evaluation-time statistics
+
+  # clampAbsObservations: 10.0
+
+  # stiffnessScale: 1.0
+  # forceLimitScale: 1.0
+  # useRelativeControl: False
+  # dofSpeedScale: 10.0
+  # actionsMovingAverage: 1.0
+  # controlFrequencyInv: 1 # 60 Hz
+
+  # resetPositionNoiseX: 0.1
+  # resetPositionNoiseY: 0.1
+  # resetPositionNoiseZ: 0.02
+  # resetRotationNoise: 1.0
+  # resetDofPosRandomIntervalFingers: 0.1
+  # resetDofPosRandomIntervalArm: 0.1
+  # resetDofVelRandomInterval: 0.5
+
+  # # Random forces applied to the object
+  # forceScale: 2.0
+  # forceProbRange: [0.001, 0.1]
+  # forceDecay: 0.99
+  # forceDecayInterval: 0.08
+
+  # liftingRewScale: 20.0
+  # liftingBonus: 300.0
+  # liftingBonusThreshold: 0.15  # when the object is lifted this distance (in meters) above the table, the agent gets the lifting bonus
+  # keypointRewScale: 200.0
+  # distanceDeltaRewScale: 50.0
+  # reachGoalBonus: 1000.0
+  # kukaActionsPenaltyScale: 0.003
+  # allegroActionsPenaltyScale: 0.0003
+  # fallDistance: 0.24
+  # fallPenalty: 0.0
+
+  # privilegedActions: False
+  # privilegedActionsTorque: 0.02
+
+  # # Physics v1, pretty much default settings we used from the start of the project
+  # dofFriction: -1.0  # negative values are ignored and the default friction from URDF file is used
+
+  # # gain of PD controller (?)
+  # allegroStiffness: 40.0
+  # kukaStiffness: 40.0
+
+  # allegroEffort: 0.35  # this is what was used in sim-to-real experiment. Motor torque in Newton*meters
+  # kukaEffort: [300, 300, 300, 300, 300, 300, 300]  # see Physics v2
+
+  # allegroDamping: 5.0
+  # kukaDamping: 5.0
+
+  # allegroArmature: 0
+  # kukaArmature: 0
+
+  # keypointScale: 1.5
+  # objectBaseSize: 0.05
+
+  # randomizeObjectDimensions: True
+  # withSmallCuboids: True
+  # withBigCuboids: True
+  # withSticks: True
+
+  # objectType: "block"
+  # observationType: "full_state"
+  # successTolerance: 0.075
+  # targetSuccessTolerance: 0.01
+  # toleranceCurriculumIncrement: 0.9  # multiplicative
+  # toleranceCurriculumInterval: 300  # in env steps across all agents, with 8192 this is 3000 * 8192 = 24.6M env steps
+  # maxConsecutiveSuccesses: 50
+  # successSteps: 1  # how many steps we should be within the tolerance before we declare a success
+
+  # saveStates: False
+  # saveStatesFile: "rootTensorsDofStates.bin"
+
+  # loadInitialStates: False
+  # loadStatesFile: "rootTensorsDofStates.bin"
+
+  goodResetBoundary: 0
+
+  n_scan: 132
+  n_priv: 9
+  n_priv_latent: 29
+  n_proprio: 48
+  history_len: 10
+
+  num_observations: 698 # n_proprio + n_scan + history_len*n_proprio + n_priv_latent + n_priv
+  num_privileged_obs: null # if not null a priviledge_obs_buf will be returned by step() (critic obs for assymetric training). null is returned otherwise 
+  num_actions: 12
+  env_spacing: 3.0  # not used with heightfields/trimeshes 
+  send_timeouts: true # send time out information to the algorithm
+  episode_length_s: 20 # episode length in seconds
+  obs_type: "og"
+
+  contact_buf_len: 100
+
+  history_encoding: True
+  reorder_dofs: True
+
+  reach_goal_delay: 0.1
+  num_future_goal_obs: 2
+  next_goal_threshold: 0.2
+
+  randomize_start_pos: False
+  randomize_start_vel: False
+  randomize_start_yaw: False
+  rand_yaw_range: 1.2
+  randomize_start_y: False
+  rand_y_range: 0.5
+  randomize_start_pitch: False
+  rand_pitch_range: 1.6
+
+  viewer:
+    ref_env: 0
+    pos: [10, 0, 6]  # [m]
+    lookat: [11., 5, 3.]  # [m]
+  
+  control:
+    # PD Drive parameters:
+    control_type: "P"
+    stiffness:
+      joint: 40.0  # [N*m/rad]
+    damping:
+      joint: 1  # [N*m*s/rad]
+    action_scale: 0.25
+    decimation: 4
+
+  normalization:
+    obs_scales:
+      lin_vel: 2.0
+      ang_vel: 0.25
+      dof_pos: 1.0
+      dof_vel: 0.05
+      height_measurements: 5.0
+    clip_observations: 100.0
+    clip_actions: 1.2
+
+  rewards:
+    scales:
+      # tracking rewards
+      tracking_goal_vel: 0.0
+      tracking_yaw: 0.0
+      # regularization rewards
+      lin_vel_z: -0.0
+      ang_vel_xy: -0.0
+      orientation: -0.0
+      dof_acc: 0.0
+      collision: 0.0
+      action_rate: 0.0
+      delta_torques: 0.0
+      torques: 0.0
+      hip_pos: 0.0
+      dof_error: 0.0
+      feet_stumble: 0.0
+      feet_edge: 0.0
+      
+    only_positive_rewards: True # if true negative total rewards are clipped at zero (avoids early termination problems)
+    tracking_sigma: 0.2 # tracking reward = exp(-error^2/sigma)
+    soft_dof_vel_limit: 1.0
+    soft_torque_limit: 0.4
+    max_contact_force: 40.0 # forces above this value are penalized
+    soft_dof_pos_limit: 0.9
+    base_height_target: 0.25
+
+  commands:
+    curriculum: False
+    max_curriculum: 1.0
+    num_commands: 4  # default: lin_vel_x, lin_vel_y, ang_vel_yaw, heading (in heading mode ang_vel_yaw is recomputed from heading error)
+    resampling_time: 6.0  # time before commands are changed [s]
+    heading_command: True  # if true: compute ang vel command from heading error
+
+    lin_vel_clip: 0.2
+    ang_vel_clip: 0.4
+
+    ranges:
+      lin_vel_x: [0.0, 1.5]  # min max [m/s]
+      lin_vel_y: [0.0, 0.0]  # min max [m/s]
+      ang_vel_yaw: [0.0, 0.0]  # min max [rad/s]
+      heading: [0.0, 0.0]
+
+    max_ranges:
+      lin_vel_x: [0.3, 0.8]  # min max [m/s]
+      lin_vel_y: [-0.3, 0.3]  # min max [m/s]
+      ang_vel_yaw: [0.0, 0.0]  # min max [rad/s]
+      heading: [-1.6, 1.6]
+
+    crclm_incremnt:
+      lin_vel_x: 0.1  # increment [m/s]
+      lin_vel_y: 0.1  # increment [m/s]
+      ang_vel_yaw: 0.1  # increment [rad/s]
+      heading: 0.5
+
+    waypoint_delta: 0.7
+
+
+  domain_rand:
+    randomize_friction: True
+    friction_range: [0.6, 2.0]
+    randomize_base_mass: True
+    added_mass_range: [0.0, 3.0]
+    randomize_base_com: True
+    added_com_range: [-0.2, 0.2]
+    push_robots: True
+    push_interval_s: 8
+    max_push_vel_xy: 0.5
+
+    randomize_motor: True
+    motor_strength_range: [0.8, 1.2]
+
+    delay_update_global_steps: 192000
+    action_delay: False
+    action_curr_step: [1, 1]
+    action_curr_step_scratch: [0, 1]
+    action_delay_view: 1
+    action_buf_len: 8
+
+  asset:
+
+    file: '{LEGGED_GYM_ROOT_DIR}/urdf/a1/urdf/a1.urdf'
+    foot_name: "foot"
+    penalize_contacts_on: ["thigh", "calf"]
+    terminate_after_contacts_on: ["base"]#, "thigh", "calf"]
+    self_collisions: 1 # 1 to disable, 0 to enable...bitwise filter
+
+    disable_gravity: False
+    collapse_fixed_joints: True # merge bodies connected by fixed joints. Specific fixed joints can be kept by adding " <... dont_collapse="true">
+    fix_base_link: False # fixe the base of the robot
+    default_dof_drive_mode: 3 # see GymDofDriveModeFlags (0 is none, 1 is pos tgt, 2 is vel tgt, 3 effort)
+    replace_cylinder_with_capsule: True # replace collision cylinders with capsules, leads to faster/more stable simulation
+    flip_visual_attachments: True # Some .obj meshes must be flipped from y-up to z-up
+    
+    density: 0.001
+    angular_damping: 0.
+    linear_damping: 0.
+    max_angular_velocity: 1000.
+    max_linear_velocity: 1000.
+    armature: 0.
+    thickness: 0.01
+
+  init_state:
+    pos: [1.0, 1.0, 0.35]  # x,y,z [m]
+
+    rot: [0.0, 0.0, 0.0, 1.0] # x,y,z,w [quat]
+    lin_vel: [0.0, 0.0, 0.0]  # x,y,z [m/s]
+    ang_vel: [0.0, 0.0, 0.0]  # x,y,z [rad/s]
+
+    default_joint_angles:  # = target angles [rad] when action = 0.0
+      FL_hip_joint: 0.1    # [rad]
+      RL_hip_joint: 0.1    # [rad]
+      FR_hip_joint: -0.1   # [rad]
+      RR_hip_joint: -0.1   # [rad]
+
+      FL_thigh_joint: 0.8  # [rad]
+      RL_thigh_joint: 1.0  # [rad]
+      FR_thigh_joint: 0.8  # [rad]
+      RR_thigh_joint: 1.0  # [rad]
+
+      FL_calf_joint: -1.5  # [rad]
+      RL_calf_joint: -1.5  # [rad]
+      FR_calf_joint: -1.5  # [rad]
+      RR_calf_joint: -1.5  # [rad]
+
+  terrain:
+    mesh_type: "trimesh"  # "heightfield" # none, plane, heightfield or trimesh
+    hf2mesh_method: "grid"  # grid or fast
+    max_error: 0.1  # for fast
+    max_error_camera: 2
+
+    y_range: [-0.4, 0.4]
+
+    edge_width_thresh: 0.05
+    horizontal_scale: 0.05  # [m] influence computation time by a lot
+    horizontal_scale_camera: 0.1
+    vertical_scale: 0.005  # [m]
+    border_size: 5  # [m]
+    height: [0.02, 0.06]
+    simplify_grid: False
+    gap_size: [0.02, 0.1]
+    stepping_stone_distance: [0.02, 0.08]
+    downsampled_scale: 0.075
+    curriculum: False
+
+    all_vertical: False
+    no_flat: True
+
+    static_friction: 1.0
+    dynamic_friction: 1.0
+    restitution: 0.0
+    measure_heights: True
+    measured_points_x: [-0.45, -0.3, -0.15, 0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2]  # 1mx1.6m rectangle (without center line)
+    measured_points_y: [-0.75, -0.6, -0.45, -0.3, -0.15, 0.0, 0.15, 0.3, 0.45, 0.6, 0.75]
+    measure_horizontal_noise: 0.0
+
+    selected: False  # select a unique terrain type and pass all arguments
+    terrain_kwargs: null  # Dict of arguments for selected terrain
+    max_init_terrain_level: 5  # starting curriculum state
+    terrain_length: 10.0
+    terrain_width: 10.0
+    num_rows: 4  # number of terrain rows (levels)  # spreaded is beneficial!
+    num_cols: 4  # number of terrain cols (types)
+
+    terrain_dict:
+      smooth slope: 0.0
+      rough slope up: 0.0
+      rough slope down: 0.0
+      rough stairs up: 0.0
+      rough stairs down: 0.0
+      discrete: 0.0
+      stepping stones: 0.0
+      gaps: 0.0
+      smooth flat: 0
+      pit: 0.0
+      wall: 0.0
+      platform: 0.0
+      large stairs up: 0.0
+      large stairs down: 0.0
+      parkour: 0.2
+      parkour_hurdle: 0.2
+      parkour_flat: 0.2
+      parkour_step: 0.2
+      parkour_gap: 0.2
+      demo: 0.0
+    terrain_proportions: !!seq
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.2
+      - 0.2
+      - 0.2
+      - 0.2
+      - 0.2
+      - 0.0
+
+    # trimesh only:
+    slope_treshold: 1.5  # slopes above this threshold will be corrected to vertical surfaces
+    origin_zero_z: True
+
+    num_goals: 8
+
+  depth:
+    use_camera: False
+    camera_num_envs: 192
+    camera_terrain_num_rows: 10
+    camera_terrain_num_cols: 20
+
+    position: [0.27, 0, 0.03]  # front camera
+    angle: [-5, 5]  # positive pitch down
+
+    update_interval: 5  # 5 works without retraining, 8 worse
+
+    original: [106, 60]
+    resized: [87, 58]
+    horizontal_fov: 87
+    buffer_len: 2
+
+    near_clip: 0
+    far_clip: 2
+    dis_noise: 0.0
+
+    scale: 1
+    invert: True
+    
+
+task:
+  randomize: False
+  randomization_params:
+    frequency: 480   # Define how many simulation steps between generating new randomizations
+
+    observations:
+      range: [0, .002] # range for the white noise
+      range_correlated: [0, .001 ] # range for correlated noise, refreshed with freq `frequency`
+      operation: "additive"
+      distribution: "gaussian"
+      schedule: "linear"   # "constant" is to turn on noise after `schedule_steps` num steps
+      schedule_steps: 40000
+    actions:
+      range: [0., .05]
+      range_correlated: [0, .015] # range for correlated noise, refreshed with freq `frequency`
+      operation: "additive"
+      distribution: "gaussian"
+      schedule: "linear"  # "linear" will linearly interpolate between no rand and max rand
+      schedule_steps: 40000
+
+    sim_params:
+    gravity:
+      range: [0, 0.4]
+      operation: "additive"
+      distribution: "gaussian"
+      schedule: "linear"  # "linear" will linearly interpolate between no rand and max rand
+      schedule_steps: 40000
+
+    actor_params:
+      allegro:
+        color: True
+        dof_properties:
+          damping:
+            range: [0.3, 3.0]
+            operation: "scaling"
+            distribution: "loguniform"
+            schedule: "linear"  # "linear" will scale the current random sample by `min(current num steps, schedule_steps) / schedule_steps`
+            schedule_steps: 30000
+          stiffness:
+            range: [0.75, 1.5]
+            operation: "scaling"
+            distribution: "loguniform"
+            schedule: "linear"  # "linear" will scale the current random sample by `min(current num steps, schedule_steps) / schedule_steps`
+            schedule_steps: 30000
+          lower:
+            range: [0, 0.01]
+            operation: "additive"
+            distribution: "gaussian"
+            schedule: "linear"  # "linear" will scale the current random sample by `min(current num steps, schedule_steps) / schedule_steps`
+            schedule_steps: 30000
+          upper:
+            range: [0, 0.01]
+            operation: "additive"
+            distribution: "gaussian"
+            schedule: "linear"  # "linear" will scale the current random sample by `min(current num steps, schedule_steps) / schedule_steps`
+            schedule_steps: 30000
+        rigid_body_properties:
+          mass:
+            range: [0.5, 1.5]
+            operation: "scaling"
+            distribution: "uniform"
+            schedule: "linear"  # "linear" will scale the current random sample by `min(current num steps, schedule_steps) / schedule_steps`
+            schedule_steps: 30000
+        rigid_shape_properties:
+          friction:
+            num_buckets: 250
+            range: [0.7, 1.3]
+            operation: "scaling"
+            distribution: "uniform"
+            schedule: "linear"  # "linear" will scale the current random sample by `min(current num steps, schedule_steps) / schedule_steps`
+            schedule_steps: 30000
+      object:
+        scale:
+          range: [0.5, 2.0]
+          operation: "scaling"
+          distribution: "uniform"
+          schedule: "linear"  # "linear" will scale the current random sample by ``min(current num steps, schedule_steps) / schedule_steps`
+          schedule_steps: 1
+        rigid_body_properties:
+          mass:
+            range: [0.5, 1.5]
+            operation: "scaling"
+            distribution: "uniform"
+            schedule: "linear"  # "linear" will scale the current random sample by ``min(current num steps, schedule_steps) / schedule_steps`
+            schedule_steps: 30000
+        rigid_shape_properties:
+          friction:
+            num_buckets: 250
+            range: [0.7, 1.3]
+            operation: "scaling"
+            distribution: "uniform"
+            schedule: "linear"  # "linear" will scale the current random sample by `min(current num steps, schedule_steps) / schedule_steps`
+            schedule_steps: 30000
+
+sim:
+  substeps: 2
+  dt: 0.005 # 1/60
+  up_axis: "z"
+  use_gpu_pipeline: ${eq:${...pipeline},"gpu"}
+  num_client_threads: 8
+
+  gravity: [0.0, 0.0, -9.81]
+  physx:
+    num_threads: 6
+    solver_type: 1  # 0: pgs, 1: tgs
+    num_position_iterations: 8
+    num_velocity_iterations: 0
+
+    max_gpu_contact_pairs: 16777216 # 8*1024*1024
+    num_subscenes: ${....num_subscenes}
+    contact_offset: 0.002
+    rest_offset: 0.0
+    bounce_threshold_velocity: 0.2
+    max_depenetration_velocity: 1000.0
+    default_buffer_size_multiplier: 25.0
+    contact_collection: 0 # 0: CC_NEVER (don't collect contact info), 1: CC_LAST_SUBSTEP (collect only contacts on last substep), 2: CC_ALL_SUBSTEPS (broken - do not use!)
