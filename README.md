@@ -1,6 +1,6 @@
 # EPO: Evolutionary Policy Optimization
-[![arXiv](https://img.shields.io/badge/arXiv-2407.20230-df2a2a.svg)](https://arxiv.org/abs/2407.20230)
-[![Static Badge](https://img.shields.io/badge/Project-epo-a)](https://sites.google.com/view/epo-rl)
+[![arXiv](https://img.shields.io/badge/arXiv-2407.20230-df2a2a.svg)](https://arxiv.org/abs/2503.19037)
+[![Static Badge](https://img.shields.io/badge/Project-epo-a)](https://yifansu1301.github.io/EPO/)
 [![Python](https://img.shields.io/badge/python-3.8-blue)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
