@@ -39,28 +39,22 @@ We provide the exact commands which can be used to reproduce the performance of 
 ```bash
 # Allegro Kuka Regrasping
 ./scripts/train_allegro_kuka.sh regrasping "test" 1 24576 [] --epo --lstm --num-expl-coef-blocks=64 --wandb-entity <ENTITY_NAME> --ir-type=none  # EPO
-
 ./scripts/train_allegro_kuka.sh regrasping "test" 1 24576 [] --ppo --lstm --wandb-entity <ENTITY_NAME> # PPO
 
 # Allegro Kuka Throw
 ./scripts/train_allegro_kuka.sh throw "test" 1 24576 [] --epo --lstm --num-expl-coef-blocks=64 --wandb-entity <ENTITY_NAME> --ir-type=none #EPO 
-
 ./scripts/train_allegro_kuka.sh throw "test" 1 24576 [] --ppo --lstm --wandb-entity <ENTITY_NAME> # PPO
 
 # Allegro Kuka Reorientation
 ./scripts/train_allegro_kuka.sh reorientation "test" 1 24576 [] --epo --lstm --num-expl-coef-blocks=64 --wandb-entity <ENTITY_NAME> --ir-type=entropy --ir-coef-scale=0.005 #EPO
-
 ./scripts/train_allegro_kuka.sh reorientation "test" 1 24576 [] --ppo --lstm --wandb-entity <ENTITY_NAME> # PPO
 
 # Allegro Kuka Two Arms Regrasping
 ./scripts/train_allegro_kuka_two_arms.sh regrasping "test" 1 24576  [] --epo --lstm --num-expl-coef-blocks=64 --wandb-entity <ENTITY_NAME> --ir-type=entropy --ir-coef-scale=0.002 # EPO
-
-
 ./scripts/train_allegro_kuka_two_arms.sh regrasping "test" 6 4104  [] --ppo --lstm --wandb-entity <ENTITY_NAME> # PPO
 
 # Allegro Kuka Two Arms Reorientation
 ./scripts/train_allegro_kuka_two_arms.sh reorientation "test" 1 24576  [] --epo --lstm --num-expl-coef-blocks=64 --wandb-entity <ENTITY_NAME> --ir-type=entropy --ir-coef-scale=0.002 # EPO
-
 ./scripts/train_allegro_kuka_two_arms.sh reorientation "test" 6 4104  [] --ppo --lstm --wandb-entity <ENTITY_NAME> # PPO
 
 
